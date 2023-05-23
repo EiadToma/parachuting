@@ -12,9 +12,6 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setPixelRatio( window.devicePixelRatio );
 
 document.body.appendChild( renderer.domElement );
-// const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-// const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-// const cube = new THREE.Mesh( geometry, material );
 let sky = new Sky();
   sky.scale.setScalar( 450000 );
   scene.add( sky );
@@ -29,7 +26,7 @@ const effectController = {
   azimuth: 180,
   exposure: renderer.toneMappingExposure
 };
-
+//stats for sky
 const uniforms = sky.material.uniforms;
 					uniforms[ 'turbidity' ].value = effectController.turbidity;
 					uniforms[ 'rayleigh' ].value = effectController.rayleigh;
@@ -47,32 +44,41 @@ const uniforms = sky.material.uniforms;
 const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(0, 1, 0);
 
-// scene.add( cube );
-let nigga,helicopter,parachute
+let nigga,helicopter,parachute//variables for models
 const loader = new GLTFLoader();
 
 //loading models...
-loader.load('./CjModel/scene.gltf', function(gltf) {
-  nigga=gltf.scene
-  gltf.scene.position.y= -2.5
-  gltf.scene.position.z= 3
-
-    scene.add(gltf.scene);
-  });
-
 loader.load('./helicopterModel/scene.gltf', function(gltf) {
   helicopter=gltf.scene
-  gltf.scene.scale.set(0.4,0.4,0.4)
-  gltf.scene.position.y= 1.5
-scene.add(gltf.scene);
+  helicopter.scale.set(0.4,0.4,0.4)
+  helicopter.position.y= 1.5
+  helicopter.position.x=16
+  helicopter.rotation.z = 0.2
+scene.add(helicopter);
 });
+
+loader.load('./CjModel/scene.gltf', function(gltf) {
+nigga=gltf.scene
+nigga.position.y= -2.5
+nigga.position.z= 4
+
+    scene.add(nigga);
+  });
 
 loader.load('./parachute/scene.gltf', function(gltf) {
   parachute=gltf.scene
-  gltf.scene.position.y= -1
-  gltf.scene.scale.set(0.1,0.1,0.1)
-    scene.add(gltf.scene);
+  parachute.position.y= -2
+  parachute.scale.set(0.1,0.1,0.1)
+    scene.add(parachute);
   });
+
+  //ground
+var groundGeometry = new THREE.PlaneGeometry(100, 100);
+var groundMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 });
+var groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+groundMesh.position.y = -40;
+groundMesh.rotation.x = -Math.PI / 2; 
+scene.add(groundMesh);
 
 
 scene.add(light);
@@ -92,6 +98,17 @@ window.addEventListener( 'resize', onWindowResize );
 
 
 function animate() {
+  //helicopter movment
+if (helicopter !== undefined) {
+  if(helicopter.position.x >0 ){
+    helicopter.position.x -= 0.01;
+}
+if(helicopter.position.x <2){
+  if(helicopter.rotation.z >0)
+    helicopter.rotation.z -= 0.001
+ }
+  }
+  //
 	requestAnimationFrame( animate );
 	renderer.render( scene, camera );
   controls.update();
