@@ -5,12 +5,12 @@ import { Sky } from 'three/addons/objects/Sky.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({antialias:true});
 const controls = new OrbitControls( camera, renderer.domElement );
+
 
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setPixelRatio( window.devicePixelRatio );
-
 document.body.appendChild( renderer.domElement );
 let sky = new Sky();
   sky.scale.setScalar( 450000 );
@@ -56,34 +56,75 @@ loader.load('./helicopterModel/scene.gltf', function(gltf) {
   helicopter.rotation.z = 0.2
 scene.add(helicopter);
 });
+let cjnumber=0
 
-loader.load('./CjModel/scene.gltf', function(gltf) {
-nigga=gltf.scene
-nigga.position.y= -2.5
-nigga.position.z= 4
+function jumb(){
+if(cjnumber ==0){
+  loader.load('./CjModel/scene.gltf', function(gltf) {
+    nigga=gltf.scene
+    nigga.position.x = helicopter?.position.x
+    nigga.position.y= -2.5
+    nigga.position.z= 4
+    
+        scene.add(nigga);
+      })
+    cjnumber+=1;
+  }
+      else
+      console.log('cjalreadyexist')
 
-    scene.add(nigga);
-  });
+}
 
-loader.load('./parachute/scene.gltf', function(gltf) {
-  parachute=gltf.scene
-  parachute.position.y= -2
-  parachute.scale.set(0.1,0.1,0.1)
-    scene.add(parachute);
-  });
+function pJumb(){
+  if(nigga){
+  loader.load('./parachute/scene.gltf', function(gltf) {
+    parachute=gltf.scene;
+    parachute.position.x=nigga.position.x;
+    parachute.position.y= nigga.position.y + 0.5;
+    parachute.scale.set(0.1,0.1,0.1)
+      scene.add(parachute);
+    })}
+    else{
+    loader.load('./CjModel/scene.gltf', function(gltf) {
+      nigga=gltf.scene
+      nigga.position.x = helicopter?.position.x
+      nigga.position.y= -2.5
+      nigga.position.z= 4
+      
+          scene.add(nigga);
+    })
+    loader.load('./parachute/scene.gltf', function(gltf) {
+      parachute=gltf.scene;
+      parachute.position.x=nigga.position.x;
+      parachute.position.y= nigga.position.y + 0.5;
+      parachute.scale.set(0.1,0.1,0.1)
+        scene.add(parachute);
+      })
+    }
+
+}
+  document.getElementById("btn").addEventListener("click", jumb);
+
+  document.getElementById("pbtn").addEventListener("click", pJumb);
+
+
 
   //ground
-var groundGeometry = new THREE.PlaneGeometry(100, 100);
-var groundMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 });
-var groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
-groundMesh.position.y = -40;
-groundMesh.rotation.x = -Math.PI / 2; 
-scene.add(groundMesh);
+var groundGeometry = new THREE.PlaneGeometry(300 , 300);
+const groundtext = new THREE.TextureLoader().load( 'atlas.png' );
+groundtext.colorSpace = THREE.SRGBColorSpace;
+groundtext.magFilter = THREE.NearestFilter;
+groundtext.wrapS = THREE.RepeatWrapping;
+groundtext.wrapT = THREE.RepeatWrapping;
+groundtext.repeat.set(1, 1 );
+const ground = new THREE.Mesh( groundGeometry, new THREE.MeshLambertMaterial( { map: groundtext, side: THREE.DoubleSide } ) );
+scene.add( ground );
+ground.position.y = -40;
+ground.rotation.x = -Math.PI / 2; 
 
 
 scene.add(light);
 camera.position.z = 5;
-
 
 //handel resize
 function onWindowResize() {
@@ -115,3 +156,11 @@ if(helicopter.position.x <2){
 
 }
 animate();
+
+const ambientLight = new THREE.AmbientLight( 0xeeeeee );
+scene.add( ambientLight );
+
+const directionalLight = new THREE.DirectionalLight( 0xffffff, 4 );
+directionalLight.position.set( 1, 1, 0.5 ).normalize();
+scene.add( directionalLight );
+
