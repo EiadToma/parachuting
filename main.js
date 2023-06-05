@@ -55,6 +55,7 @@ loader.load('./helicopterModel/scene.gltf', function(gltf) {
   helicopter.position.x=16
   helicopter.rotation.z = 0.2
 scene.add(helicopter);
+
 });
 let cjnumber=0
 
@@ -67,6 +68,7 @@ if(cjnumber ==0){
     nigga.position.z= 4
     
         scene.add(nigga);
+     
       })
     cjnumber+=1;
   }
@@ -153,6 +155,14 @@ if(helicopter.position.x <2){
 	requestAnimationFrame( animate );
 	renderer.render( scene, camera );
   controls.update();
+  if (nigga) {
+    var modelPosition = new THREE.Vector3();
+    nigga.getWorldPosition(modelPosition);
+
+    // Adjust the camera position and look-at target as desired
+    camera.position.set(modelPosition.x, modelPosition.y , modelPosition.z + 5);
+    camera.lookAt(modelPosition);
+  }
 
 }
 animate();
