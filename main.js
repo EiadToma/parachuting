@@ -79,13 +79,13 @@ const FLift = (Ci, A, rho, V) => {
 
 const PCalculate = (h, T) => {
     return P0 * Math.exp((-M * g * h) / (R * T));
-
 }
 
 const TCalculate = (h) => {
     const temp = T0 - 0.0065 * h;
     return temp + 273.15;
 }
+
 const rhoCalculate = (P, T) => {
     return (P * M) / (R * T);
 }
@@ -103,17 +103,6 @@ const loader = new GLTFLoader();
 //     scene.add(helicopter);
 // });
 
-// CJModel
-loader.load('./CjModel/scene.gltf', function (gltf) {
-    human = gltf.scene
-    human.position.y = h
-    human.position.z = 3
-    human.rotation.x=90
-    human.scale.set(5,5,5)
-    scene.add(human);
-});
-
-
 //Parachute Model
 // loader.load('./parachute/scene.gltf', function (gltf) {
 //     parachute = gltf.scene
@@ -122,6 +111,17 @@ loader.load('./CjModel/scene.gltf', function (gltf) {
 //     parachute.scale.set(0.1, 0.1, 0.1)
 //     scene.add(parachute);
 // });
+
+// CJModel
+loader.load('./CjModel/scene.gltf', function (gltf) {
+    human = gltf.scene
+    human.position.y = h
+    human.position.z = 3
+    human.rotation.x = 90
+    human.scale.set(5, 5, 5)
+    scene.add(human);
+});
+
 
 //ground
 let groundGeometry = new THREE.PlaneGeometry(100, 100);
@@ -133,18 +133,16 @@ groundMesh.rotation.x = -Math.PI / 2;
 scene.add(groundMesh);
 
 
-// Create a cube geometry
-var geometry = new THREE.BoxGeometry(1, 1, 1);
-
-// Create a material
-var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-
-// Create a mesh
+// //Create a cube geometry
+// var geometry = new THREE.BoxGeometry(1, 1, 1);
+//
+// // Create a material
+// var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+//
+// // Create a mesh
 // var cube = new THREE.Mesh(geometry, material);
 // cube.scale.set(5, 5, 5)
 // scene.add(cube);
-//
-//
 // scene.add(light);
 // camera.position.z = 10;
 
@@ -162,14 +160,17 @@ function onWindowResize() {
 
 window.addEventListener('resize', onWindowResize);
 
-camera.position.x = 7.696983651430115;
-camera.position.y = 225.4176245866113;
+
+camera.position.set(0, 10, 20);
+
 camera.position.z = 500;
 
 function animate() {
     if (h > -12.5) {
-        if(human!== undefined){
-            human.position.y=h
+        if (human !== undefined) {
+            camera.position.set(human.position.x, human.position.y + 75, human.position.z + 50);
+            camera.lookAt(human.position)
+            human.position.y = h
         }
         T = TCalculate(h);
         P = PCalculate(h, T);
@@ -180,7 +181,14 @@ function animate() {
         Vy = Vy + Ay;
         let hs = Vy / 1000;
         h -= hs;
-        console.log(h)
+
+        console.log(` 
+        height: ${h + 13} m 
+        speed: ${Vy} m/s 
+        Temp: ${T} K 
+        Pressure: ${P} Pa
+        Acceleration: ${Ay} m/s^2`
+        )
 
     }
 
