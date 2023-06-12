@@ -22,13 +22,23 @@ const A = L * W;        // مقطع السطح العرضي للباراشوت
 const AHuman = 1.4; // مقطع سطح العرضي للانسان 
 const Cd = 2; //انسيابية الباراشوت
 const Ci = 1; // قوة الرفع 
+
 let Ay
-let vwy = 10
+let Ax
+let Vwy = 10
+let Vwx = 10
+let Xdistance = 0;
 
 let h = 4500;          // الأرتفاع الإبتدائي
 let Vy = 0; //السرعة الإبتدائية على المحور العمودي
-let Vx = 20; // السرعة الابتدائية على المحور الافقي
+let Vx = 0; // السرعة الابتدائية على المحور الافقي
 let rho, T, P; //درجة الحرارة و كثافة الهواء و الضغط الجوي 
+let Az = 0;
+let Vz = 1;
+let Vwz = 10;
+let Zdistance = 0;
+
+let Te=800;
 
 const h0 = h;
 
@@ -51,8 +61,12 @@ const TCalculate = (h) => {
   return temp + 273.15;
 }
 
+const Tens = (m) =>{
+  return m*g;
+} 
+
 const rhoCalculate = (P, T) => {
-  return (P * M) / (R * T)*100;
+  return (P * M) / (R * T) * 100;
 }
 
 const FWind = (Cd, A, rho, V) => {
@@ -143,7 +157,6 @@ loader.load('./CjModel/scene.gltf', function (gltf) {
 // }
 
 let opened = false
-let push = false
 function pJumb() {
   if (human) {
 
@@ -194,7 +207,7 @@ groundtext.wrapT = THREE.RepeatWrapping;
 groundtext.repeat.set(1, 1);
 const ground = new THREE.Mesh(groundGeometry, new THREE.MeshLambertMaterial({ map: groundtext, side: THREE.DoubleSide }));
 scene.add(ground);
-ground.position.y = 0;
+ground.position.y = -12.5;
 ground.rotation.x = -Math.PI / 2;
 
 
@@ -220,57 +233,46 @@ var clock = new THREE.Clock();
 function animate() {
   var deltaTime = clock.getDelta()
 
+
+
   if (h > -12.5 && !opened) {
     if (human !== undefined) {
       camera.position.set(human.position.x, human.position.y + 75, human.position.z + 50);
       camera.lookAt(human.position)
       human.position.y = h
+      human.position.x = Xdistance
+      human.position.z = Zdistance
+
     }
     T = TCalculate(h);
     P = PCalculate(h, T);
 
     rho = rhoCalculate(P, T);
+
     let FnetY = Fg(humanWeight + parachuteWeight, g)
     Ay = FnetY / (humanWeight + parachuteWeight);
     Vy += Ay * deltaTime;
     let hs = (Vy * deltaTime);
     h -= hs;
 
-    console.log(` 
-    height: ${h + 13} m 
-    speed: ${Vy} m/s 
-    Temp: ${T} K 
-    Pressure: ${P} Pa
-    Acceleration: ${Ay} m/s^2
-    DeltaTime : ${deltaTime}
-    Fnet : ${FnetY}
-    FG : ${Fg(humanWeight + parachuteWeight, g)}
-    rho : ${rho}
 
-    
-    `
-    )
+    let FnetX = FWind(CdHuman, AHuman, rho, Vwx) - FDrag(CdHuman, AHuman, rho, Vx)
+    Ax = FnetX / (humanWeight + parachuteWeight);
+    Vx += Ax * deltaTime;
+    let distX = Vx * deltaTime;
+    Xdistance += distX;
 
-  } else if (h > -12.5) {
 
-    if (human !== undefined) {
-      camera.position.set(human.position.x, human.position.y + 75, human.position.z + 50);
-      camera.lookAt(human.position)
-      human.position.y = h
-    }
-    T = TCalculate(h);
-    P = PCalculate(h, T);
+    let Fnetz = FWind(CdHuman, AHuman, rho, Vwz) - FDrag(CdHuman, AHuman, rho, Vz)
+    Az = Fnetz / (humanWeight + parachuteWeight);
+    Vz += Az * deltaTime;
+    let distz = Vz * deltaTime;
+    Zdistance += distz;
 
-    rho = rhoCalculate(P, T);
-    let FnetY = Fg(humanWeight + parachuteWeight, g) - FDrag(Cd, A, rho, Vy+vwy)
-    Ay = FnetY / (humanWeight + parachuteWeight);
-    Vy += Ay * deltaTime;
-    let hs = Vy * deltaTime;
-    h -= hs;
 
     console.log(` 
     height: ${h + 13} m 
-    speed: ${Vy} m/s 
+    Vertical Velocity: ${Vy} m/s 
     Temp: ${T} K 
     Pressure: ${P} Pa
     Acceleration: ${Ay} m/s^2
@@ -279,13 +281,84 @@ function animate() {
     FG : ${Fg(humanWeight + parachuteWeight, g)}
     Fdrag : ${FDrag(Cd, A, rho, Vy)}
     rho : ${rho}
+    Horizantal X Velocity : ${Vx}
+    Xposition : ${Xdistance}
+    Horizantal Z Velocity : ${Vz}
+    Zposition : ${Zdistance}
+    Az: ${Az}
+    tense : ${Tens(humanWeight)}
 
+    
+    `
+    )
+
+  } else if (h > -12.5 && opened) {
+    if(Te < Tens(humanWeight)){
+      opened = false;
+      parachute
+    }
+    if (human !== undefined) {
+      camera.position.set(human.position.x, human.position.y + 75, human.position.z + 50);
+      camera.lookAt(human.position)
+      human.position.y = h
+      human.position.x = Xdistance
+      human.position.z = Zdistance
+
+    }
+    if (parachute !== undefined) {
+      parachute.position.x = human.position.x;
+      parachute.position.y = human.position.y + 7;
+      parachute.position.z = human.position.z - 32;
+    }
+
+    T = TCalculate(h);
+    P = PCalculate(h, T);
+
+    rho = rhoCalculate(P, T);
+    let FnetY = Fg(humanWeight + parachuteWeight, g) - FDrag(Cd, A, rho, Vy + Vwy)
+    Ay = FnetY / (humanWeight + parachuteWeight);
+    Vy += Ay * deltaTime;
+
+
+    let FnetX = FWind(Cd, A, rho, Vwx) - FDrag(Cd, A, rho, Vx)
+    Ax = FnetX / (humanWeight + parachuteWeight);
+    Vx += Ax * deltaTime;
+    let distX = Vx * deltaTime;
+    Xdistance += distX;
+
+    let Fnetz = FWind(Cd, A, rho, Vwz) - FDrag(Cd, A, rho, Vz)
+    Az = Fnetz / (humanWeight + parachuteWeight);
+    Vz += Az * deltaTime;
+    let distz = Vz * deltaTime;
+    Zdistance += distz;
+
+
+
+    let hs = Vy * deltaTime;
+    h -= hs;
+
+
+    console.log(` 
+    height: ${h + 13} m 
+    Vertical Velocity: ${Vy} m/s 
+    Temp: ${T} K 
+    Pressure: ${P} Pa
+    Acceleration: ${Ay} m/s^2
+    DeltaTime : ${deltaTime}
+    Fnet : ${FnetY}
+    FG : ${Fg(humanWeight + parachuteWeight, g)}
+    Fdrag : ${FDrag(Cd, A, rho, Vy)}
+    rho : ${rho}
+    Horizantal Velocity : ${Vx}
+    Xposition : ${Xdistance}
+    Horizantal Z Velocity : ${Vz}
+    Zposition : ${Zdistance}
+    Az: ${Az}
+    tense : ${Tens(humanWeight)}
 
     `)
 
     human.rotation.x = 0
-    camera.position.set(human.position.x + 25, human.position.y, human.position.z - 50);
-    camera.lookAt(human.position)
   }
 
 
