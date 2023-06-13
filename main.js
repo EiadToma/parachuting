@@ -23,20 +23,22 @@ const AHuman = 1.4; // مقطع سطح العرضي للانسان
 const Cd = 2; //انسيابية الباراشوت
 const Ci = 1; // قوة الرفع 
 
-let Ay
-let Ax
-let Vwy = 10
-let Vwx = 10
+let Ay  //التسارع على محور المحور العمودي
+let Ax  // التسارع على المحور الأفقي
+let Vwy = 10  //  سرعة الرياح على المحور العمودي
+let Vwx = 10  // سرعة الرياح على المحور الأفقي
 let Xdistance = 0;
+
+let Az;   // التسارع على المحور الأفقي  
+let Vz = 1;  //السرعة على المحور الأفقي
+let Vwz = 10;  //سرعة الرياح على المحور الأفقي
+let Zdistance = 0;
 
 let h = 4500;          // الأرتفاع الإبتدائي
 let Vy = 0; //السرعة الإبتدائية على المحور العمودي
 let Vx = 0; // السرعة الابتدائية على المحور الافقي
 let rho, T, P; //درجة الحرارة و كثافة الهواء و الضغط الجوي 
-let Az = 0;
-let Vz = 1;
-let Vwz = 10;
-let Zdistance = 0;
+
 
 let Te=800;
 
@@ -287,8 +289,6 @@ function animate() {
     Zposition : ${Zdistance}
     Az: ${Az}
     tense : ${Tens(humanWeight)}
-
-    
     `
     )
 
@@ -355,7 +355,6 @@ function animate() {
     Zposition : ${Zdistance}
     Az: ${Az}
     tense : ${Tens(humanWeight)}
-
     `)
 
     human.rotation.x = 0
