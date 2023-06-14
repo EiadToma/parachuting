@@ -6,24 +6,26 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 const controls = new OrbitControls(camera, renderer.domElement);
 
-const skyboxGeo= new THREE.BoxGeometry(10000,10000,10000);
-let materialArray= []
-let textureT=new THREE.TextureLoader().load('skybox/sun_ft.jpg')
-let textureL=new THREE.TextureLoader().load('skybox/sun_bk.jpg')
-let textureR=new THREE.TextureLoader().load('skybox/sun_up.jpg')
-let textureB=new THREE.TextureLoader().load('skybox/sun_dn.jpg')
-let textureF=new THREE.TextureLoader().load('skybox/sun_rt.jpg')
-let textureBa=new THREE.TextureLoader().load('skybox/sun_lf.jpg')
-materialArray.push(new THREE.MeshBasicMaterial({map:textureT}))
-materialArray.push(new THREE.MeshBasicMaterial({map:textureL}))
-materialArray.push(new THREE.MeshBasicMaterial({map:textureR}))
-materialArray.push(new THREE.MeshBasicMaterial({map:textureB}))
-materialArray.push(new THREE.MeshBasicMaterial({map:textureF}))
-materialArray.push(new THREE.MeshBasicMaterial({map:textureBa}))
+const skyboxGeo = new THREE.BoxGeometry(10000, 10000, 10000);
+let materialArray = []
+let textureT = new THREE.TextureLoader().load('skybox/sun_ft.jpg')
+let textureL = new THREE.TextureLoader().load('skybox/sun_bk.jpg')
+let textureR = new THREE.TextureLoader().load('skybox/sun_up.jpg')
+let textureB = new THREE.TextureLoader().load('skybox/sun_dn.jpg')
+let textureF = new THREE.TextureLoader().load('skybox/sun_rt.jpg')
+let textureBa = new THREE.TextureLoader().load('skybox/sun_lf.jpg')
+materialArray.push(new THREE.MeshBasicMaterial({ map: textureT }))
+materialArray.push(new THREE.MeshBasicMaterial({ map: textureL }))
+materialArray.push(new THREE.MeshBasicMaterial({ map: textureR }))
+materialArray.push(new THREE.MeshBasicMaterial({ map: textureB }))
+materialArray.push(new THREE.MeshBasicMaterial({ map: textureF }))
+materialArray.push(new THREE.MeshBasicMaterial({ map: textureBa }))
 
-let skybox = new THREE.Mesh(skyboxGeo,materialArray)
-for(let i =0 ;i<6;i++)
-materialArray[i].side= THREE.BackSide;
+let skybox = new THREE.Mesh(skyboxGeo, materialArray)
+for (let i = 0; i < 6; i++)
+  materialArray[i].side = THREE.BackSide;
+
+skybox.position.y=1000
 scene.add(skybox)
 
 
@@ -44,7 +46,7 @@ loader.load('./helicopterModel/scene.gltf', function (gltf) {
   helicopter = gltf.scene
   helicopter.scale.set(0.4, 0.4, 0.4)
   helicopter.position.y = 1.5
-  helicopter.position.x = 16
+  helicopter.position.x = Xdistance
   helicopter.rotation.z = 0.2
   scene.add(helicopter);
 
@@ -56,7 +58,7 @@ function jumb() {
     loader.load('./CjModel/scene.gltf', function (gltf) {
       human = gltf.scene
       human.position.x = helicopter?.position.x
-      human.position.y = Height-5
+      human.position.y = Height - 5
       human.position.z = 4
       human.rotation.x = 90
       scene.add(human);
@@ -77,28 +79,11 @@ function pJumb() {
       parachute.position.x = human.position.x;
       parachute.position.y = human.position.y + 7;
       parachute.position.z = human.position.z - 32;
-      parachute.scale.set(0.4,0.4,0.4)
+      parachute.scale.set(0.4, 0.4, 0.4)
       opened = true;
       scene.add(parachute);
     })
   }
-  // else {
-  //   loader.load('./CjModel/scene.gltf', function (gltf) {
-  //     human = gltf.scene
-  //     human.position.x = helicopter?.position.x
-  //     human.position.y = -2.5
-  //     human.position.z = 4
-
-  //     scene.add(human);
-  //   })
-  //   loader.load('./parachute/scene.gltf', function (gltf) {
-  //     parachute = gltf.scene;
-  //     parachute.position.x = human.position.x;
-  //     parachute.position.y = human.position.y + 0.5;
-  //     parachute.scale.set(0.1, 0.1, 0.1)
-  //     scene.add(parachute);
-  //   })
-  // }
 
 }
 //adding functions to jumb and open parachaut buttons 
@@ -107,12 +92,11 @@ document.getElementById("btn").addEventListener("click", jumb);
 document.getElementById("pbtn").addEventListener("click", pJumb);
 //asigning variables to the two boxes on the right
 
-document.getElementById('1value').innerText = "Height :";
-document.getElementById('2value').innerText = "Velocity :";
+
 
 
 //ground
-var groundGeometry = new THREE.PlaneGeometry(300, 300);
+var groundGeometry = new THREE.PlaneGeometry(10000, 10000);
 const groundtext = new THREE.TextureLoader().load('atlas.png');
 groundtext.colorSpace = THREE.SRGBColorSpace;
 groundtext.magFilter = THREE.NearestFilter;
@@ -121,7 +105,7 @@ groundtext.wrapT = THREE.RepeatWrapping;
 groundtext.repeat.set(1, 1);
 const ground = new THREE.Mesh(groundGeometry, new THREE.MeshLambertMaterial({ map: groundtext, side: THREE.DoubleSide }));
 scene.add(ground);
-ground.position.y = -40;
+ground.position.y = 0;
 ground.rotation.x = -Math.PI / 2;
 
 
@@ -145,52 +129,60 @@ function animate() {
   var deltaTime = clock.getDelta()
 
 
-  if(human){
+  if (human) {
 
-    document.getElementById('1value').innerText = 
-    `Height :
+    document.getElementById('1value').innerText =
+      `Height :
     ${parseInt(Height)}  `;
 
-    document.getElementById('2value').innerText = 
-    ` Velocity:
+    document.getElementById('2value').innerText =
+      ` Velocity:
     Y : ${parseInt(Vy)} m/s 
     X : ${parseInt(Vx)} m/s
-    Z : ${parseInt(Vz)} m/s` ; 
-  if (Height > -12.5 && !opened) {
+    Z : ${parseInt(Vz)} m/s`;
 
-      human.position.y = Height
+    
+    document.getElementById('3value').innerText =
+      ` Acceleration:
+    Y : ${parseInt(Ay)} m/s 
+    X : ${parseInt(Ax)} m/s
+    Z : ${parseInt(Az)} m/s`;
+
+    if (Height > 0 && !opened) {
+
+      human.position.y = Height - 5
       human.position.x = Xdistance
       human.position.z = Zdistance
 
 
-    T = TCalculate(Height);
-    P = PCalculate(Height, T);
+      T = TCalculate(Height);
+      P = PCalculate(Height, T);
 
-    rho = rhoCalculate(P, T);
+      rho = rhoCalculate(P, T);
 
-    let FnetY = Fg(humanWeight + parachuteWeight, g)
-    Ay = FnetY / (humanWeight + parachuteWeight);
-    Vy += Ay * deltaTime;
-    let hs = (Vy * deltaTime);
-    Height -= hs;
-
-
-    let FnetX = FWind(CdHuman, AHuman, rho, Vwx) - FDrag(CdHuman, AHuman, rho, Vx)
-    Ax = FnetX / (humanWeight + parachuteWeight);
-    Vx += Ax * deltaTime;
-    let distX = Vx * deltaTime;
-    Xdistance += distX;
+      let FnetY = Fg(humanWeight + parachuteWeight, g)
+      Ay = FnetY / (humanWeight + parachuteWeight);
+      Vy += Ay * deltaTime;
+      let hs = (Vy * deltaTime);
+      Height -= hs;
 
 
-    let Fnetz = FWind(CdHuman, AHuman, rho, Vwz) - FDrag(CdHuman, AHuman, rho, Vz)
-    Az = Fnetz / (humanWeight + parachuteWeight);
-    Vz += Az * deltaTime;
-    let distz = Vz * deltaTime;
-    Zdistance += distz;
+      let FnetX = FWind(CdHuman, AHuman, rho, Vwx) - FDrag(CdHuman, AHuman, rho, Vx)
+      Ax = FnetX / (humanWeight + parachuteWeight);
+      Vx += Ax * deltaTime;
+      let distX = Vx * deltaTime;
+      Xdistance += distX;
 
 
-    console.log(` 
-    height: ${Height + 13} m 
+      let Fnetz = FWind(CdHuman, AHuman, rho, Vwz) - FDrag(CdHuman, AHuman, rho, Vz)
+      Az = Fnetz / (humanWeight + parachuteWeight);
+      Vz += Az * deltaTime;
+      let distz = Vz * deltaTime;
+      Zdistance += distz;
+
+
+      console.log(` 
+    height: ${Height} m 
     Vertical Velocity: ${Vy} m/s 
     Temp: ${T} K 
     Pressure: ${P} Pa
@@ -207,46 +199,49 @@ function animate() {
     Az: ${Az}
     tense : ${Tens(humanWeight)}
     `
-    )
+      )
 
-  } else if (Height > -12.5 && opened) {
+    } else if (Height > 0 && opened) {
 
-    if (parachute !== undefined) {
-      parachute.position.x = human.position.x;
-      parachute.position.y = human.position.y +3.5;
-      parachute.position.z = human.position.z -3.2;
-    }
+      if(Vx<-15){}
+      human.position.y = Height
+      human.position.x = Xdistance
+      human.position.z = Zdistance
+      
+      if (parachute !== undefined) {
+        parachute.position.x = human.position.x;
+        parachute.position.y = human.position.y + 3.5;
+        parachute.position.z = human.position.z - 3.2;
+      }
 
-    T = TCalculate(Height);
-    P = PCalculate(Height, T);
+      T = TCalculate(Height);
+      P = PCalculate(Height, T);
 
-    rho = rhoCalculate(P, T);
-    
-    let FnetY = Fg(humanWeight + parachuteWeight, g) - FDrag(Cd, A, rho, Vy + Vwy)
-    Ay = FnetY / (humanWeight + parachuteWeight);
-    Vy += Ay * deltaTime;
+      rho = rhoCalculate(P, T);
 
-
-    let FnetX = FWind(Cd, A, rho, Vwx) - FDrag(Cd, A, rho, Vx)
-    Ax = FnetX / (humanWeight + parachuteWeight);
-    Vx += Ax * deltaTime;
-    let distX = Vx * deltaTime;
-    Xdistance += distX;
-
-    let Fnetz = FWind(Cd, A, rho, Vwz) - FDrag(Cd, A, rho, Vz)
-    Az = Fnetz / (humanWeight + parachuteWeight);
-    Vz += Az * deltaTime;
-    let distz = Vz * deltaTime;
-    Zdistance += distz;
+      let FnetY = Fg(humanWeight + parachuteWeight, g) - FDrag(Cd, A, rho, Vy ) - FDrag(Cd,A,rho,Vy)
+      Ay = FnetY / (humanWeight + parachuteWeight);
+      Vy += Ay * deltaTime;
+      let hs = Vy * deltaTime;
+      Height -= hs;
 
 
+      let FnetX = FWind(Cd, A, rho, Vwx) - FDrag(Cd, A, rho, Vx) 
+      Ax = FnetX / (humanWeight + parachuteWeight);
+      Vx += Ax * deltaTime;
+      let distX = Vx * deltaTime;
+      Xdistance += distX;
 
-    let hs = Vy * deltaTime;
-    Height -= hs;
+      let Fnetz = FWind(Cd, A, rho, Vwz) - FDrag(Cd, A, rho, Vz)
+      Az = Fnetz / (humanWeight + parachuteWeight);
+      Vz += Az * deltaTime;
+      let distz = Vz * deltaTime;
+      Zdistance += distz;
 
 
-    console.log(` 
-    height: ${Height + 13} m 
+
+      console.log(` 
+    height: ${Height} m 
     Vertical Velocity: ${Vy} m/s 
     Temp: ${T} K 
     Pressure: ${P} Pa
@@ -264,8 +259,17 @@ function animate() {
     tense : ${Tens(humanWeight)}
     `)
 
-    human.rotation.x = 0
-  }
+      human.rotation.x = 0
+    }else if(!opened){
+      human.position.y=-2.5;
+      console.log(`human pos :${human.position.y}`)
+      human.rotation.x=90
+    }else{
+      human.position.y=2; 
+      parachute.position.x = human.position.x;
+      parachute.position.y = human.position.y + 3.5;
+      parachute.position.z = human.position.z - 3.2;
+    }
   }
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
@@ -276,7 +280,7 @@ function animate() {
     var modelPosition = new THREE.Vector3();
     human.getWorldPosition(modelPosition);
     // Adjust the camera position and look-at target as desired
-    camera.position.set(modelPosition.x+10, modelPosition.y+10, modelPosition.z + 10);
+    camera.position.set(modelPosition.x, modelPosition.y+5, modelPosition.z + 10);
     camera.lookAt(modelPosition);
   } else {
     var modelPosition = new THREE.Vector3();
@@ -302,14 +306,14 @@ const R = 8.31;  // ثابت الغازات العام
 const T0 = 15;  // درجة الحرارة عند سطخ الارض بالسيليسويس 
 const g = 9.82;         //ثابت الجاذبية الأرضية  
 
-let A ;       // مقطع السطح العرضي للباراشوت
+let A;       // مقطع السطح العرضي للباراشوت
 const AHuman = 1.4; // مقطع سطح العرضي للانسان 
 const Cd = 2; //انسيابية الباراشوت
 const Ci = 1; // قوة الرفع 
 
 let Ay  //التسارع على محور المحور العمودي
 let Ax  // التسارع على المحور الأفقي
-let Vwy = 10  //  سرعة الرياح على المحور العمودي
+let Vwy = -10  //  سرعة الرياح على المحور العمودي
 let Vwx = 10  // سرعة الرياح على المحور الأفقي
 let Xdistance = 0;
 
@@ -367,8 +371,28 @@ document.getElementById('form-btn').addEventListener('click', function (e) {
   Height = parseInt(document.getElementById('height').value)
   L = parseInt(document.getElementById('pcl').value)
   W = parseInt(document.getElementById('pcw').value)
-  A = L*W;
+  A = L * W;
   helicopter.position.y = Height
+
+
+  document.getElementById('1value').innerText =
+  `Height :
+  ${parseInt(Height)}  `;
+  
+  document.getElementById('2value').innerText =
+  ` Velocity:
+  Y : 0 m/s 
+  X : 0 m/s
+  Z : 0 m/s`;
+  
+  
+  document.getElementById('3value').innerText =
+  ` Acceleration:
+  Y : 0 m/s 
+  X : 0 m/s
+  Z : 0 m/s`;
+
+
   document.getElementById("welpage").style.display = "none";
   animate()
 })
