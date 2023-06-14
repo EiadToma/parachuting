@@ -105,10 +105,14 @@ function pJumb(){
     }
 
 }
-  document.getElementById("btn").addEventListener("click", jumb);
+//adding functions to jumb and open parachaut buttons 
+document.getElementById("btn").addEventListener("click", jumb);
 
   document.getElementById("pbtn").addEventListener("click", pJumb);
-
+ //asigning variables to the two boxes on the right
+  let value1=10,value2='test';
+  document.getElementById('1value').innerText=value1;
+  document.getElementById('2value').innerText=value2;
 
 
   //ground
@@ -141,6 +145,11 @@ window.addEventListener( 'resize', onWindowResize );
 
 
 function animate() {
+  let garvity,wind,weight
+  garvity =document.getElementById('w').innerText
+  wind =document.getElementById('d').innerText
+  weight =document.getElementById('i').innerText
+
   //helicopter movment
 if (helicopter !== undefined) {
   if(helicopter.position.x >0 ){
@@ -163,10 +172,13 @@ if(helicopter.position.x <2){
     camera.position.set(modelPosition.x, modelPosition.y , modelPosition.z + 5);
     camera.lookAt(modelPosition);
   }
-
 }
-animate();
-
+//when form button is clicked this function excutes
+document.getElementById('form-btn').addEventListener('click',function(e){
+  e.preventDefault();
+  document.getElementById("welpage").style.display = "none";
+     animate()
+})
 const ambientLight = new THREE.AmbientLight( 0xeeeeee );
 scene.add( ambientLight );
 

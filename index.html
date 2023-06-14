@@ -3,11 +3,36 @@
 	<head>
 		<meta charset="utf-8">
 		<title>My first three.js app</title>
+		<link rel="stylesheet" href="./styles.css">
 		<style>
 			body { margin: 0; padding: 0;}
 		</style>
 	</head>
 	<body>
+		<div 
+class="welcome"
+id="welpage"
+		>
+		<form class="form">
+			<label>weight</label>
+			<input class="input" id="w">
+			<label>gravity</label>
+			<input class="input" id="i">
+			<label>wind</label>
+			<input class="input" id="d">
+			<button
+			class="form-btn" id="form-btn" >Jumb Boy</button>
+		</form>
+		</div>
+		<div
+		style="position: absolute; background-color: white; top: 30%; right: 1%; width: 70px; height: 70px; border-radius: 5px;"
+		id="1value">
+		
+		</div>
+		<div
+		style="position: absolute; background-color: white; top: 40%; right: 1%; width: 70px; height: 70px; border-radius: 5px;"
+		id="2value">
+		</div>
 	
 		<button style="position: absolute; background-color: red; top: 30%; left: 30%; width: 50px; height: 50px; border-radius: 5px;"
 		id="btn" onclick="">
