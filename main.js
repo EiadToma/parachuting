@@ -1,45 +1,36 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { Sky } from 'three/addons/objects/Sky.js';
-
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 30000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 const controls = new OrbitControls(camera, renderer.domElement);
 
+const skyboxGeo= new THREE.BoxGeometry(10000,10000,10000);
+let materialArray= []
+let textureT=new THREE.TextureLoader().load('skybox/sun_ft.jpg')
+let textureL=new THREE.TextureLoader().load('skybox/sun_bk.jpg')
+let textureR=new THREE.TextureLoader().load('skybox/sun_up.jpg')
+let textureB=new THREE.TextureLoader().load('skybox/sun_dn.jpg')
+let textureF=new THREE.TextureLoader().load('skybox/sun_rt.jpg')
+let textureBa=new THREE.TextureLoader().load('skybox/sun_lf.jpg')
+materialArray.push(new THREE.MeshBasicMaterial({map:textureT}))
+materialArray.push(new THREE.MeshBasicMaterial({map:textureL}))
+materialArray.push(new THREE.MeshBasicMaterial({map:textureR}))
+materialArray.push(new THREE.MeshBasicMaterial({map:textureB}))
+materialArray.push(new THREE.MeshBasicMaterial({map:textureF}))
+materialArray.push(new THREE.MeshBasicMaterial({map:textureBa}))
+
+let skybox = new THREE.Mesh(skyboxGeo,materialArray)
+for(let i =0 ;i<6;i++)
+materialArray[i].side= THREE.BackSide;
+scene.add(skybox)
 
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
-let sky = new Sky();
-sky.scale.setScalar(450000);
-scene.add(sky);
-let sun = new THREE.Vector3();
 
-const effectController = {
-  turbidity: 10,
-  rayleigh: 3,
-  mieCoefficient: 0.005,
-  mieDirectionalG: 0.7,
-  elevation: 2,
-  azimuth: 180,
-  exposure: renderer.toneMappingExposure
-};
-//stats for sky
-const uniforms = sky.material.uniforms;
-uniforms['turbidity'].value = effectController.turbidity;
-uniforms['rayleigh'].value = effectController.rayleigh;
-uniforms['mieCoefficient'].value = effectController.mieCoefficient;
-uniforms['mieDirectionalG'].value = effectController.mieDirectionalG;
-
-const phi = THREE.MathUtils.degToRad(90 - effectController.elevation);
-const theta = THREE.MathUtils.degToRad(effectController.azimuth);
-
-sun.setFromSphericalCoords(1, phi, theta);
-
-uniforms['sunPosition'].value.copy(sun);
 
 
 const light = new THREE.DirectionalLight(0xffffff, 1);
